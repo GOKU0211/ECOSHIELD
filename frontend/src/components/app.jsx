@@ -208,7 +208,9 @@ export default function App() {
   const ageSec = status ? now / 1000 - status.updated_at : null;
   const stale = ageSec !== null && ageSec > (cfg?.poll_interval_seconds ?? 5) * 3;
   const online = status && !error && !stale;
-  const chartData = readings.map((r) => ({ ...r }));
+  const WINDOW_MINUTES = 10;
+  const cutoff = Date.now() / 1000 - WINDOW_MINUTES * 60;
+  const chartData = readings.filter((r) => r.timestamp >= cutoff).map((r) => ({ ...r }));
   const tMin = readings[0]?.timestamp;
   const visibleEvents = events.filter((e) => tMin !== undefined && e.timestamp >= tMin);
   const carbon = useCarbonTracker(res, pollSeconds);
